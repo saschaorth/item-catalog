@@ -40,100 +40,6 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-@app.route('/')
-@app.route('/catalog/')
-def show_categories():
-    categories = session.query(Category).all()
-
-    category_items = session.query(Item)\
-        .order_by(desc(Item.id))\
-        .limit(4)\
-        .all()
-
-    return render_template(
-        'categories.html',
-        categories=categories,
-        category_items=category_items
-    )
-
-
-@app.route('/catalog/<int:category_id>/')
-def show_category_items(category_id):
-    categories = session.query(Category).all()
-
-    category = session.query(Category)\
-        .filter_by(id=category_id)\
-        .one()
-
-    category_items = session.query(Item)\
-        .filter_by(category_id=category_id)\
-        .all()
-
-    number_of_category_items = len(category_items)
-
-    return render_template(
-        'category_items.html',
-        categories=categories,
-        category=category,
-        category_items=category_items,
-        number_of_category_items=number_of_category_items
-    )
-
-
-@app.route('/catalog/<int:category_id>/item/<int:item_id>')
-def show_item(category_id, item_id):
-    item = session.query(Item)\
-        .filter_by(id=item_id)\
-        .one()
-
-    category = session.query(Category)\
-        .filter_by(id=category_id)\
-        .one()
-
-    return render_template(
-        'item.html',
-        category=category,
-        item=item
-    )
-
-
-# Make sure the user is logged in
-def ensure_login(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if 'username' not in login_session:
-            return redirect(url_for('login'))
-        return func(*args, **kwargs)
-    return wrapper
-
-
-@app.route('/catalog/<int:category_id>/item/new', methods=['POST', 'GET'])
-@ensure_login
-def add_item(category_id):
-    if request.method == 'POST':
-
-        if not request.form['name']:
-            flash('Please add an item name')
-            return redirect(url_for('add_item', category_id=category_id))
-
-        if not request.form['description']:
-            flash('Please add a description')
-            return redirect(url_for('add_item', category_id=category_id))
-
-        new_item = Item(
-            category_id=category_id,
-            name=request.form['name'],
-            description=request.form['description'],
-            user_id=login_session['user_id']
-        )
-        session.add(new_item)
-        session.commit()
-        flash('New item {} successfully created'.format(new_item.name))
-        return redirect(url_for('show_category_items', category_id=category_id))
-    else:
-        return render_template('add_item.html')
-
-
 @app.route('/login')
 def login():
     # Create anti-forgery state token
@@ -282,6 +188,156 @@ def gdisconnect():
         return response
 
     return 'logout successful'
+
+
+@app.route('/')
+@app.route('/catalog/')
+def show_categories():
+    categories = session.query(Category).all()
+
+    category_items = session.query(Item)\
+        .order_by(desc(Item.id))\
+        .limit(4)\
+        .all()
+
+    return render_template(
+        'categories.html',
+        categories=categories,
+        category_items=category_items
+    )
+
+
+@app.route('/catalog/<int:category_id>/')
+def show_category_items(category_id):
+    categories = session.query(Category).all()
+
+    category = session.query(Category)\
+        .filter_by(id=category_id)\
+        .one()
+
+    category_items = session.query(Item)\
+        .filter_by(category_id=category_id)\
+        .all()
+
+    number_of_category_items = len(category_items)
+
+    return render_template(
+        'category_items.html',
+        categories=categories,
+        category=category,
+        category_items=category_items,
+        number_of_category_items=number_of_category_items
+    )
+
+
+@app.route('/catalog/<int:category_id>/item/<int:item_id>')
+def show_item(category_id, item_id):
+    item = session.query(Item)\
+        .filter_by(id=item_id)\
+        .one()
+
+    category = session.query(Category)\
+        .filter_by(id=category_id)\
+        .one()
+
+    return render_template(
+        'item.html',
+        category=category,
+        item=item
+    )
+
+
+# Make sure the user is logged in
+def ensure_login(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect(url_for('login'))
+        return func(*args, **kwargs)
+    return wrapper
+
+
+@app.route('/catalog/<int:category_id>/item/new', methods=['POST', 'GET'])
+@ensure_login
+def add_item(category_id):
+    if request.method == 'POST':
+
+        if not request.form['name']:
+            flash('Please add an item name')
+            return redirect(url_for('add_item', category_id=category_id))
+
+        if not request.form['description']:
+            flash('Please add a description')
+            return redirect(url_for('add_item', category_id=category_id))
+
+        new_item = Item(
+            category_id=category_id,
+            name=request.form['name'],
+            description=request.form['description'],
+            user_id=login_session['user_id']
+        )
+        session.add(new_item)
+        session.commit()
+        flash('New item {} successfully created'.format(new_item.name))
+        return redirect(url_for('show_category_items', category_id=category_id))
+    else:
+        return render_template('add_item.html')
+
+
+@app.route('/catalog/<int:category_id>/item/<int:item_id>/edit', methods=['POST', 'GET'])
+@ensure_login
+def edit_item(category_id, item_id):
+    item = session.query(Item)\
+        .filter_by(id=item_id)\
+        .one()
+
+    item_owner = session.query(User)\
+        .filter_by(id=item.user_id)\
+        .one()
+
+    # Ensure the current user owns the item
+    if item_owner.id != login_session['user_id']:
+        return redirect(url_for('login'))
+
+    categories = session.query(Category).all()
+
+    if request.method == 'POST':
+        if request.form['name']:
+            item.name = request.form['name']
+        if request.form['description']:
+            item.description = request.form['description']
+        if request.form['category']:
+            item.category_id = request.form['category']
+        session.add(item)
+        session.commit()
+        flash('Item {} successfully edited'.format(item.name))
+        return redirect(url_for('show_category_items', category_id=category_id))
+    else:
+        return render_template('edit_item.html', item=item, categories=categories)
+
+
+@app.route('/catalog/<int:category_id>/item/<int:item_id>/delete', methods=['POST', 'GET'])
+@ensure_login
+def delete_item(category_id, item_id):
+    item = session.query(Item)\
+        .filter_by(id=item_id)\
+        .one()
+
+    item_owner = session.query(User)\
+        .filter_by(id=item.user_id)\
+        .one()
+
+    # Ensure the current user owns the item
+    if item_owner.id != login_session['user_id']:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        session.delete(item)
+        session.commit()
+        flash('Item {} successfully deleted'.format(item.name))
+        return redirect(url_for('show_category_items', category_id=category_id))
+    else:
+        return render_template('delete_item.html', item=item)
 
 
 if __name__ == '__main__':
