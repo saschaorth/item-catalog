@@ -1,0 +1,34 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<body>
+
+    <nav class="minheight">
+      <h2>Categories</h2>
+
+      <ul>
+        {% for category in categories %}
+        <li>
+          <a href = "{{url_for('show_category_items', category_id=category.id)}}"
+             style="color:black">{{category.name}}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <article>
+      <h2>{{category.name}} ({{number_of_category_items}} items)</h2>
+      <ul>
+        {% for item in category_items %}
+        <li>
+            <a href = "{{url_for ('show_item', item_id=item.id, category_id=item.category.id)}}"
+               style="color:black">{{item.name}}
+            </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </article>
+
+</body>
+{% endblock %}

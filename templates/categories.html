@@ -1,0 +1,31 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<body>
+
+  <h2>Categories</h2>
+
+  <ul>
+    {% for category in categories %}
+    <li>
+      <a href = "{{url_for('show_category_items', category_id=category.id)}}"
+         style="color:black">{{category.name}}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <h2>Latest items</h2>
+
+  <ul>
+    {% for item in category_items %}
+    <li>
+        <a href = "{{url_for ('show_item', item_id=item.id, category_id=item.category.id)}}"
+           style="color:black">{{item.name}} ({{item.category.name}})
+        </a>
+    </li>
+    {% endfor %}
+  </ul>
+
+</body>
+{% endblock %}
