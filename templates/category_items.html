@@ -3,6 +3,18 @@
 {% include "header.html" %}
 <body>
 
+    <div class = 'flash'>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li> <strong> {{ message }} </strong> </li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+
     <nav class="minheight">
       <h2>Categories</h2>
 
@@ -29,6 +41,8 @@
         {% endfor %}
       </ul>
     </article>
+
+    <a href="{{url_for('add_item', category_id=category.id)}}">Add item</a>
 
 </body>
 {% endblock %}
