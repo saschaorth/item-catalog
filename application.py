@@ -340,6 +340,29 @@ def delete_item(category_id, item_id):
         return render_template('delete_item.html', item=item)
 
 
+@app.route('/catalog/json')
+def show_categories_json():
+    categories = session.query(Category).all()
+    return jsonify(categories=[category.serialize for category in categories])
+
+
+@app.route('/catalog/<int:category_id>/json')
+def show_category_items_json(category_id):
+    items = session.query(Item)\
+        .filter_by(category_id=category_id)\
+        .all()
+    return jsonify(categoryItems=[item.serialize for item in items])
+
+
+@app.route('/catalog/<int:category_id>/item/<int:item_id>/json')
+def show_category_item_json(category_id, item_id):
+    item = session.query(Item)\
+        .filter_by(id=item_id)\
+        .filter_by(category_id=category_id)\
+        .first()
+    return jsonify(categoryItem=[item.serialize])
+
+
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
