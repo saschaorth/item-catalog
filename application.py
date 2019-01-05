@@ -31,7 +31,9 @@ from functools import wraps
 
 app = Flask(__name__)
 
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(
+    open('client_secrets.json', 'r').read()
+)['web']['client_id']
 
 engine = create_engine('sqlite:///itemcatalog.db?check_same_thread=False')
 Base.metadata.bind = engine
@@ -103,13 +105,16 @@ def gconnect():
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
-        response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
+        response = make_response(
+            json.dumps('Failed to upgrade the authorization code.'), 401
+        )
         response.headers['Content-Type'] = 'application/json'
         return response
 
     # Check that the access token is valid.
     access_token = credentials.access_token
-    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={}'.format(access_token))
+    endpoint = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token='
+    url = ('{}{}'.format(endpoint, access_token))
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
 
@@ -122,13 +127,17 @@ def gconnect():
     # Verify that the access token is used for the intended user.
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
-        response = make_response(json.dumps("Token's user ID doesn't match given user ID."), 401)
+        response = make_response(
+            json.dumps("Token's user ID doesn't match given user ID."), 401
+        )
         response.headers['Content-Type'] = 'application/json'
         return response
 
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
-        response = make_response(json.dumps("Token's client ID does not match app's."), 401)
+        response = make_response(
+            json.dumps("Token's client ID does not match app's."), 401
+        )
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -136,7 +145,9 @@ def gconnect():
     stored_gplus_id = login_session.get('gplus_id')
 
     if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'), 200)
+        response = make_response(
+            json.dumps('Current user is already connected.'), 200
+        )
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -170,7 +181,9 @@ def gdisconnect():
     access_token = login_session.get('access_token')
 
     if access_token is None:
-        response = make_response(json.dumps('Current user not connected.'), 401)
+        response = make_response(
+            json.dumps('Current user not connected.'), 401
+        )
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -183,7 +196,9 @@ def gdisconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(
+            json.dumps('Failed to revoke token for given user.'), 400
+        )
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -279,13 +294,18 @@ def add_item():
         session.add(new_item)
         session.commit()
         flash('New item {} successfully created'.format(new_item.name))
-        return redirect(url_for('show_category_items', category_id=new_item.category_id))
+        return redirect(
+            url_for('show_category_items', category_id=new_item.category_id)
+        )
     else:
         categories = session.query(Category).all()
         return render_template('add_item.html', categories=categories)
 
 
-@app.route('/catalog/<int:category_id>/item/<int:item_id>/edit', methods=['POST', 'GET'])
+@app.route(
+    '/catalog/<int:category_id>/item/<int:item_id>/edit',
+    methods=['POST', 'GET']
+)
 @ensure_login
 def edit_item(category_id, item_id):
     item = session.query(Item)\
@@ -316,17 +336,25 @@ def edit_item(category_id, item_id):
             return redirect(url_for('edit', category_id=category_id))
         if not request.form['description']:
             flash('Please add a description')
-            return redirect(url_for('edit_item', category_id=category_id, item_id=item_id))
+            return redirect(
+                url_for('edit_item', category_id=category_id, item_id=item_id)
+            )
 
         session.add(item)
         session.commit()
         flash('Item {} successfully edited'.format(item.name))
-        return redirect(url_for('show_category_items', category_id=category_id))
+        return redirect(
+            url_for('show_category_items', category_id=category_id)
+        )
     else:
-        return render_template('edit_item.html', item=item, categories=categories)
+        return render_template(
+            'edit_item.html', item=item, categories=categories
+        )
 
 
-@app.route('/catalog/<int:category_id>/item/<int:item_id>/delete', methods=['POST', 'GET'])
+@app.route(
+    '/catalog/<int:category_id>/item/<int:item_id>/delete',
+    methods=['POST', 'GET'])
 @ensure_login
 def delete_item(category_id, item_id):
     item = session.query(Item)\
@@ -345,7 +373,9 @@ def delete_item(category_id, item_id):
         session.delete(item)
         session.commit()
         flash('Item {} successfully deleted'.format(item.name))
-        return redirect(url_for('show_category_items', category_id=category_id))
+        return redirect(
+            url_for('show_category_items', category_id=category_id)
+        )
     else:
         return render_template('delete_item.html', item=item)
 
