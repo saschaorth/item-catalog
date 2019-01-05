@@ -33,7 +33,7 @@ app = Flask(__name__)
 
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 
-engine = create_engine('sqlite:///itemcatalog.db')
+engine = create_engine('sqlite:///itemcatalog.db?check_same_thread=False')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -262,10 +262,10 @@ def ensure_login(func):
 def add_item(category_id):
     if request.method == 'POST':
 
+        # ensure all fields are filled with values
         if not request.form['name']:
             flash('Please add an item name')
             return redirect(url_for('add_item', category_id=category_id))
-
         if not request.form['description']:
             flash('Please add a description')
             return redirect(url_for('add_item', category_id=category_id))
@@ -281,7 +281,7 @@ def add_item(category_id):
         flash('New item {} successfully created'.format(new_item.name))
         return redirect(url_for('show_category_items', category_id=category_id))
     else:
-        return render_template('add_item.html')
+        return render_template('add_item.html', category_id=category_id)
 
 
 @app.route('/catalog/<int:category_id>/item/<int:item_id>/edit', methods=['POST', 'GET'])
@@ -308,6 +308,15 @@ def edit_item(category_id, item_id):
             item.description = request.form['description']
         if request.form['category']:
             item.category_id = request.form['category']
+
+        # ensure all fields are filled with values
+        if not request.form['name']:
+            flash('Please add an item name')
+            return redirect(url_for('edit', category_id=category_id))
+        if not request.form['description']:
+            flash('Please add a description')
+            return redirect(url_for('edit_item', category_id=category_id, item_id=item_id))
+
         session.add(item)
         session.commit()
         flash('Item {} successfully edited'.format(item.name))
