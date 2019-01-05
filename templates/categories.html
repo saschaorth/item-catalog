@@ -13,12 +13,12 @@
     </div>
 	<div class="row">
 		<div class="categories column column-25">
-			<div class="categories__list">
+			<div>
 				<h6 class="list_header">
 					<span class="header_title">Categories</span>
 					<span class="header_bar"></span>
 				</h6>
-				<ul class="list__items">
+				<ul class="item_list">
 					{% for category in categories %}
 						<a href="{{url_for('show_category_items', category_id=category.id)}}">
 							<li class="item_list">
@@ -35,7 +35,8 @@
 					<span class="header_title">Latest items</span>
 					<span class="header_bar"></span>
 				</h6>
-				<ul class="list__items">
+				<ul class="item_list">
+                    <a href="{{url_for('add_item')}}" class="button u add_item">Add Item</a>
 					{% for item in category_items %}
 						<a href="{{url_for ('show_item', item_id=item.id, category_id=item.category.id)}}">
 							<li class="item_list">

@@ -12,8 +12,14 @@
 					<input type="text" name="name" class="form__input">
 					<label for="" class="form_label">Description:</label>
 					<textarea name="description" id="" cols="30" rows="10" class="form_textarea"></textarea>
+					<label for="" class="form_label">Category:</label>
+					<select name="category">
+						{% for category in categories %}
+							<option value="{{category.id}}">{{category.name}}</option>
+						{% endfor %}
+					</select>
 				</fieldset>
-                <a href="{{url_for('show_category_items', category_id=category_id)}}" class="button button-outline">Cancel</a>
+                <a href="{{url_for('show_categories')}}" class="button button-outline">Cancel</a>
 				<input type="submit" value="Add item">
 				{% with messages = get_flashed_messages() %}
 					{% if messages %}

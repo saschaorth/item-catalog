@@ -257,21 +257,21 @@ def ensure_login(func):
     return wrapper
 
 
-@app.route('/catalog/<int:category_id>/item/new', methods=['POST', 'GET'])
+@app.route('/catalog/item/new', methods=['POST', 'GET'])
 @ensure_login
-def add_item(category_id):
+def add_item():
     if request.method == 'POST':
 
         # ensure all fields are filled with values
         if not request.form['name']:
             flash('Please add an item name')
-            return redirect(url_for('add_item', category_id=category_id))
+            return redirect(url_for('add_item'))
         if not request.form['description']:
             flash('Please add a description')
-            return redirect(url_for('add_item', category_id=category_id))
+            return redirect(url_for('add_item'))
 
         new_item = Item(
-            category_id=category_id,
+            category_id=request.form['category'],
             name=request.form['name'],
             description=request.form['description'],
             user_id=login_session['user_id']
@@ -279,9 +279,10 @@ def add_item(category_id):
         session.add(new_item)
         session.commit()
         flash('New item {} successfully created'.format(new_item.name))
-        return redirect(url_for('show_category_items', category_id=category_id))
+        return redirect(url_for('show_category_items', category_id=new_item.category_id))
     else:
-        return render_template('add_item.html', category_id=category_id)
+        categories = session.query(Category).all()
+        return render_template('add_item.html', categories=categories)
 
 
 @app.route('/catalog/<int:category_id>/item/<int:item_id>/edit', methods=['POST', 'GET'])
