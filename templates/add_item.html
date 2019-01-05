@@ -1,38 +1,28 @@
 {% extends "main.html" %}
 {% block content %}
-{% include "header.html" %}
-<head>
-    <h1>New item</h1>
-
-    <form action="#" method = "post">
-        <div class="form-group">
-
-            <label for="name">Name:</label>
-            <input type ="text" class="form-control" maxlength="100" name="name">
-
-            <label for="description">Description:</label>
-            <textarea class="form-control" maxlength="250" rows="3" name="description"></textarea>
-
-        <div class="padding-bottom"></div>
-        <button type="submit" class="btn btn-default" id="submit" type="submit">
-        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Create</button>
-        </div>
-
-        <div class = 'flash'>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    <ul>
-                    {% for message in messages %}
-                        <li> <strong> {{ message }} </strong> </li>
-                    {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-        </div>
-
-    </form>
-</head>
-<body>
-
-</body>
+	<div class="row">
+		<div class="category-item column">
+			<h6 class="item_header">
+				<span class="header_title">Add Item</span>
+				<span class="header_bar"></span>
+			</h6>
+			<form action="#" method="post" class="item_form">
+				<fieldset>
+					<label for="" class="form_label">Name:</label>
+					<input type="text" name="name" class="form__input">
+					<label for="" class="form_label">Description:</label>
+					<textarea name="description" id="" cols="30" rows="10" class="form_textarea"></textarea>
+				</fieldset>
+                <a href="{{url_for('show_category_items', category_id=category_id)}}" class="button button-outline">Cancel</a>
+				<input type="submit" value="Add item">
+				{% with messages = get_flashed_messages() %}
+					{% if messages %}
+						{% for message in messages %}
+							 <p class="flash_message">{{message}}</p>
+						{% endfor %}
+					{% endif %}
+				{% endwith %}
+			</form>
+		</div>
+	</div>
 {% endblock %}

@@ -1,43 +1,51 @@
 {% extends "main.html" %}
 {% block content %}
-{% include "header.html" %}
-<body>
-
-  <div class = 'flash'>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul>
-            {% for message in messages %}
-                <li> <strong> {{ message }} </strong> </li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-  </div>
-
-  <h2>Categories</h2>
-
-  <ul>
-    {% for category in categories %}
-    <li>
-      <a href = "{{url_for('show_category_items', category_id=category.id)}}"
-         style="color:black">{{category.name}}
-      </a>
-    </li>
-    {% endfor %}
-  </ul>
-
-  <h2>Latest items</h2>
-
-  <ul>
-    {% for item in category_items %}
-    <li>
-        <a href = "{{url_for ('show_item', item_id=item.id, category_id=item.category.id)}}"
-           style="color:black">{{item.name}} ({{item.category.name}})
-        </a>
-    </li>
-    {% endfor %}
-  </ul>
-
-</body>
+    <div class ="flash_message">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li> <strong> {{message}} </strong> </li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+    </div>
+	<div class="row">
+		<div class="categories column column-25">
+			<div class="categories__list">
+				<h6 class="list_header">
+					<span class="header_title">Categories</span>
+					<span class="header_bar"></span>
+				</h6>
+				<ul class="list__items">
+					{% for category in categories %}
+						<a href="{{url_for('show_category_items', category_id=category.id)}}">
+							<li class="item_list">
+								<span class="item_name">{{category.name}}</span>
+							</li>
+						</a>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+		<div class="latest column column-75">
+			<div class="latest_list">
+				<h6 class="list_header">
+					<span class="header_title">Latest items</span>
+					<span class="header_bar"></span>
+				</h6>
+				<ul class="list__items">
+					{% for item in category_items %}
+						<a href="{{url_for ('show_item', item_id=item.id, category_id=item.category.id)}}">
+							<li class="item_list">
+								<span class="item_name">{{item.name}}</span>
+								<span class="item_category">({{item.category.name}})</span>
+							</li>
+						</a>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+</div>
 {% endblock %}
