@@ -7,7 +7,7 @@
 				<span class="header_bar"></span>
 			</h6>
 			<form action="#" method="post">
-				<h5 class="category-item__message">Are you sure you want to delete {{item.name}}?</h5>
+				<h5 >Are you sure you want to delete {{item.name}}?</h5>
 				<a href="{{url_for('show_item', category_id=item.category_id, item_id=item.id)}}" class="button button-outline">Cancel</a>
 				<input type="submit" value="Delete">
 			</form>
