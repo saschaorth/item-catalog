@@ -21,6 +21,6 @@ directory with this repositiory.
 You can create some test categories with: `python test_items.py`
 - In order get the third party user registration via Google's OAuth2.0 started
 [Create your own client secrets](https://developers.google.com/identity/protocols/OAuth2)
-and save them as client_secrets in the catalog directory.
+and save them as client_secrets.json in the catalog directory.
 - Start the application with: `python application.py`
 - Now access the application via: `http://localhost:5000/`
