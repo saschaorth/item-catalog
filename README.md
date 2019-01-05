@@ -24,3 +24,10 @@ You can create some test categories with: `python test_items.py`
 and save them as client_secrets.json in the catalog directory.
 - Start the application with: `python application.py`
 - Now access the application via: `http://localhost:5000/`
+- You can also view all categories and items via json endpoint
+
+### Json endpoints
+
+- All categories via: `http://localhost:5000/catalog/json`
+- All category items via: `http://localhost:5000/catalog/<category_id>/json`
+- Single item via: `http://localhost:5000/catalog/<category_id>/item/<item_id>/json`
