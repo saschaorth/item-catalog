@@ -353,9 +353,10 @@ def edit_item(category_id, item_id):
         .filter_by(id=item.user_id)\
         .one()
 
-    # Ensure the current user owns the item
+    # Make sure only the owner of an item has edit rights
     if item_owner.id != login_session['user_id']:
-        return redirect(url_for('login'))
+        flash('Only the owner has edit rights for item {}'.format(item.name))
+        return redirect(url_for('show_categories'))
 
     categories = session.query(Category).all()
 
@@ -405,9 +406,10 @@ def delete_item(category_id, item_id):
         .filter_by(id=item.user_id)\
         .one()
 
-    # Ensure the current user owns the item
+    # Make sure only the owner of an item has delete rights
     if item_owner.id != login_session['user_id']:
-        return redirect(url_for('login'))
+        flash('Only the owner has delete rights for item {}'.format(item.name))
+        return redirect(url_for('show_categories'))
 
     if request.method == 'POST':
         session.delete(item)
