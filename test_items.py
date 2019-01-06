@@ -1,14 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# from sqlalchemy_utils import database_exists, drop_database, create_database
-
 from models import Category, Item, User, Base
 
 engine = create_engine('sqlite:///itemcatalog.db')
-
-# Base.metadata.drop_all(engine)
-# Base.metadata.create_all(engine)
 
 Base.metadata.bind = engine
 
