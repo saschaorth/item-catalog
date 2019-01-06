@@ -26,17 +26,32 @@ category1 = Category(name="berlin", user_id=1)
 session.add(category1)
 session.commit()
 
-item1 = Item(name="kreuzberg", user_id=1, description="my kiez", category=category1)
+item1 = Item(
+    name="kreuzberg",
+    user_id=1,
+    description="my kiez",
+    category=category1
+)
 
 session.add(item1)
 session.commit()
 
-item2 = Item(name="neukoelln", user_id=1,  description="my old kiez", category=category1)
+item2 = Item(
+    name="neukoelln",
+    user_id=1,
+    description="my old kiez",
+    category=category1
+)
 
 session.add(item2)
 session.commit()
 
-item3 = Item(name="friedrichshain", user_id=1, description="my work kiez", category=category1)
+item3 = Item(
+    name="friedrichshain",
+    user_id=1,
+    description="my work kiez",
+    category=category1
+)
 
 session.add(item3)
 session.commit()
@@ -47,17 +62,31 @@ category2 = Category(name="khruangbin", user_id=1)
 session.add(category2)
 session.commit()
 
-item1 = Item(name="mark", user_id=1, description="plays guitar", category=category2)
+item1 = Item(
+    name="mark",
+    user_id=1,
+    description="plays guitar",
+    category=category2
+)
 
 session.add(item1)
 session.commit()
 
-item2 = Item(name="laura", user_id=1,  description="plays base", category=category2)
+item2 = Item(
+    name="laura",
+    user_id=1,
+    description="plays base",
+    category=category2)
 
 session.add(item2)
 session.commit()
 
-item3 = Item(name="donald", user_id=1, description="plays drums", category=category2)
+item3 = Item(
+    name="donald",
+    user_id=1,
+    description="plays drums",
+    category=category2
+)
 
 session.add(item3)
 session.commit()
