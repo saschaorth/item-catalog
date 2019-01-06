@@ -44,7 +44,9 @@ session = DBSession()
 
 @app.route('/login')
 def login():
-    # Create anti-forgery state token
+    """
+    Create anti-forgery state token and pass to login.html
+    """
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
@@ -53,7 +55,9 @@ def login():
 
 @app.route('/logout')
 def logout():
-
+    """
+    Logs the user out and deletes all login_session details.
+    """
     if login_session['provider'] == 'google':
         gdisconnect()
         del login_session['access_token']
@@ -70,6 +74,9 @@ def logout():
 
 
 def get_user_id(email):
+    """
+    Get the user.id for a specific email address
+    """
     try:
         user = session.query(User)\
             .filter_by(email=email)\
@@ -80,6 +87,9 @@ def get_user_id(email):
 
 
 def add_user(login_session):
+    """
+    Add a user to the database
+    """
     user = User(
         name=login_session['email'],
         email=login_session['email']
@@ -90,6 +100,10 @@ def add_user(login_session):
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """
+    Third party authentication via Google OAuth2.0 plus login
+    """
+
     # Validate anti-forgery state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -178,6 +192,9 @@ def gconnect():
 
 @app.route('/gdisconnect')
 def gdisconnect():
+    """
+    Disconnect via Google OAuth2.0
+    """
     access_token = login_session.get('access_token')
 
     if access_token is None:
@@ -208,6 +225,9 @@ def gdisconnect():
 @app.route('/')
 @app.route('/catalog/')
 def show_categories():
+    """
+    Get all categories and category items and pass them to categories.html
+    """
     categories = session.query(Category).all()
 
     category_items = session.query(Item)\
@@ -224,6 +244,10 @@ def show_categories():
 
 @app.route('/catalog/<int:category_id>/')
 def show_category_items(category_id):
+    """
+    Get all categories, the category items for a specific category and
+    the number of those category items and pass them to category_items.html
+    """
     categories = session.query(Category).all()
 
     category = session.query(Category)\
@@ -247,6 +271,9 @@ def show_category_items(category_id):
 
 @app.route('/catalog/<int:category_id>/item/<int:item_id>')
 def show_item(category_id, item_id):
+    """
+    get a specific item and pass to item.html
+    """
     item = session.query(Item)\
         .filter_by(id=item_id)\
         .one()
@@ -262,8 +289,10 @@ def show_item(category_id, item_id):
     )
 
 
-# Make sure the user is logged in
 def ensure_login(func):
+    """
+    Decorator that makes sure the user is logged in
+    """
     @wraps(func)
     def wrapper(*args, **kwargs):
         if 'username' not in login_session:
@@ -275,6 +304,10 @@ def ensure_login(func):
 @app.route('/catalog/item/new', methods=['POST', 'GET'])
 @ensure_login
 def add_item():
+    """
+    Takes item details from the request form and creates a new item in the
+    database
+    """
     if request.method == 'POST':
 
         # ensure all fields are filled with values
@@ -308,6 +341,10 @@ def add_item():
 )
 @ensure_login
 def edit_item(category_id, item_id):
+    """
+    Takes item details from the request form and updates a specific item
+    in the database with those details
+    """
     item = session.query(Item)\
         .filter_by(id=item_id)\
         .one()
@@ -357,6 +394,9 @@ def edit_item(category_id, item_id):
     methods=['POST', 'GET'])
 @ensure_login
 def delete_item(category_id, item_id):
+    """
+    Deletes a specific item from the database.
+    """
     item = session.query(Item)\
         .filter_by(id=item_id)\
         .one()
@@ -382,12 +422,18 @@ def delete_item(category_id, item_id):
 
 @app.route('/catalog/json')
 def show_categories_json():
+    """
+    Gets all categories in json format
+    """
     categories = session.query(Category).all()
     return jsonify(categories=[category.serialize for category in categories])
 
 
 @app.route('/catalog/<int:category_id>/json')
 def show_category_items_json(category_id):
+    """
+    Gets all category items for a specific category in json format
+    """
     items = session.query(Item)\
         .filter_by(category_id=category_id)\
         .all()
@@ -396,6 +442,10 @@ def show_category_items_json(category_id):
 
 @app.route('/catalog/<int:category_id>/item/<int:item_id>/json')
 def show_category_item_json(category_id, item_id):
+    """
+    Gets a specific item in json format
+    """
+
     item = session.query(Item)\
         .filter_by(id=item_id)\
         .filter_by(category_id=category_id)\
