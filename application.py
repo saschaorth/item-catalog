@@ -447,7 +447,6 @@ def show_category_item_json(category_id, item_id):
     """
     Gets a specific item in json format
     """
-
     item = session.query(Item)\
         .filter_by(id=item_id)\
         .filter_by(category_id=category_id)\
